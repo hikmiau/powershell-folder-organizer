@@ -1,0 +1,18 @@
+﻿{
+  "targetPath": "%USERPROFILE%\\Downloads",
+  "fallbackFolder": "file",
+  "folders": {
+    "png": [".png"],
+    "jpg": [".jpg", ".jpeg"],
+    "webp": [".webp"],
+    "pdf": [".pdf"],
+    "txt": [".txt", ".md"],
+    "zip": [".zip", ".rar", ".7z", ".tar", ".gz"],
+    "exe": [".exe"],
+    "msi": [".msi"],
+    "audio": [".mp3", ".wav", ".flac", ".ogg", ".m4a"],
+    "video": [".mp4", ".mkv", ".mov", ".avi", ".webm"],
+    "code": [".ps1", ".bat", ".cmd", ".py", ".java", ".cs", ".lua", ".sql", ".js", ".ts", ".html", ".css", ".json", ".xml", ".yml", ".yaml"],
+    "tools": [".iso", ".img"]
+  }
+}
