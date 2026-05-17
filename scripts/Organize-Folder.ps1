@@ -8,6 +8,7 @@
 
 function Expand-PathValue {
     param([string]$Value)
+
     [Environment]::ExpandEnvironmentVariables($Value)
 }
 
@@ -31,7 +32,28 @@ function Get-UniquePath {
     $candidate
 }
 
-$configData = Get-Content $Config -Raw | ConvertFrom-Json
+function Test-InOrganizedFolder {
+    param(
+        [string]$FilePath,
+        [string]$RootPath,
+        [string[]]$FolderNames
+    )
+
+    $fullFilePath = [System.IO.Path]::GetFullPath($FilePath)
+
+    foreach ($folderName in $FolderNames) {
+        $folderPath = Join-Path $RootPath $folderName
+        $fullFolderPath = [System.IO.Path]::GetFullPath($folderPath).TrimEnd('\') + '\'
+
+        if ($fullFilePath.StartsWith($fullFolderPath, [System.StringComparison]::OrdinalIgnoreCase)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+$configData = Get-Content -LiteralPath $Config -Raw | ConvertFrom-Json
 
 if (-not $Path) {
     $Path = Expand-PathValue $configData.targetPath
@@ -49,10 +71,16 @@ foreach ($folder in $configData.folders.PSObject.Properties) {
     }
 }
 
+$organizedFolders = @($configData.folders.PSObject.Properties.Name + $configData.fallbackFolder) | Select-Object -Unique
 $files = Get-ChildItem -LiteralPath $Path -File -Recurse:$Recurse
+$results = @()
 
 foreach ($file in $files) {
     if (-not $IncludeHidden -and (($file.Attributes -band [System.IO.FileAttributes]::Hidden) -ne 0)) {
+        continue
+    }
+
+    if ($Recurse -and (Test-InOrganizedFolder -FilePath $file.FullName -RootPath $Path -FolderNames $organizedFolders)) {
         continue
     }
 
@@ -68,13 +96,13 @@ foreach ($file in $files) {
 
     $destinationFolder = Join-Path $Path $destinationName
 
-    if ($file.DirectoryName -eq $destinationFolder) {
+    if ($file.DirectoryName -ieq $destinationFolder) {
         continue
     }
 
     $destinationPath = Get-UniquePath (Join-Path $destinationFolder $file.Name)
 
-    [pscustomobject]@{
+    $results += [pscustomobject]@{
         File = $file.Name
         From = $file.FullName
         To = $destinationPath
@@ -85,4 +113,10 @@ foreach ($file in $files) {
         New-Item -ItemType Directory -Force $destinationFolder | Out-Null
         Move-Item -LiteralPath $file.FullName -Destination $destinationPath
     }
+}
+
+if ($results.Count -eq 0) {
+    Write-Host "No files to organize." -ForegroundColor Yellow
+} else {
+    $results
 }
