@@ -55,3 +55,9 @@ Become:
     png\image.png
     video\video.mp4
     pdf\document.pdf
+
+## Project status
+
+> This project was later merged into [powershell-file-toolkit](https://github.com/hikmiau/powershell-file-toolkit).
+>
+> The newer toolkit includes the organizer, scanner, duplicate finder, and empty folder cleaner in one project.
