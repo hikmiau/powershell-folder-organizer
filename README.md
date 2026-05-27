@@ -1,4 +1,12 @@
-﻿# powershell-folder-organizer
+﻿> [!WARNING]
+> This repository is deprecated.
+>
+> This project was merged into my newer PowerShell toolkit:
+> [powershell-file-toolkit](https://github.com/hikmiau/powershell-file-toolkit)
+>
+> I no longer actively use or maintain these Windows/PowerShell tools because my current setup is based on Arch Linux.
+
+# powershell-folder-organizer
 
 A simple PowerShell tool that organizes a folder by file type.
 
